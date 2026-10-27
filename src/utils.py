@@ -25,11 +25,17 @@ def resolve_project_path(
 
 def create_spark_session(app_name: str) -> SparkSession:
     """Create the local Spark session using the project's existing memory settings."""
-    return (
-        SparkSession.builder.appName(app_name)
-        .config("spark.hadoop.fs.permissions.enabled", "false")
+    builder = SparkSession.builder.appName(app_name)
+    # Keep the settings that were used on the original Windows machine
+    # configurable. The Hadoop permissions options are retained for compatibility.
+    builder = (
+        builder.config("spark.hadoop.fs.permissions.enabled", "false")
         .config("spark.hadoop.fs.permissions.umask-mode", "022")
-        .config("spark.executor.memory", "2g")
-        .config("spark.driver.memory", "4g")
+    )
+    executor_memory = os.getenv("SPARK_EXECUTOR_MEMORY", "2g")
+    driver_memory = os.getenv("SPARK_DRIVER_MEMORY", "4g")
+    return (
+        builder.config("spark.executor.memory", executor_memory)
+        .config("spark.driver.memory", driver_memory)
         .getOrCreate()
     )
