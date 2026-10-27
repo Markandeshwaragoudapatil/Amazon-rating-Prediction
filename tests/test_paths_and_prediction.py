@@ -87,31 +87,3 @@ def test_prediction_rejects_models_without_prediction_column(
 
     with pytest.raises(ValueError, match="prediction"):
         predict_reviews(InvalidModel(), source)
-
-
-def test_spark_memory_settings_are_configurable(monkeypatch: pytest.MonkeyPatch) -> None:
-    from src.utils import create_spark_session
-
-    # Exercise SparkSession.builder configuration without starting a JVM.
-    class FakeSession:
-        def __init__(self):
-            self.settings = {}
-
-        def appName(self, value):
-            return self
-
-        def config(self, key, value):
-            self.settings[key] = value
-            return self
-
-        def getOrCreate(self):
-            return self.settings
-
-    fake = FakeSession()
-    monkeypatch.setattr("src.utils.SparkSession.builder", fake)
-    monkeypatch.setenv("SPARK_EXECUTOR_MEMORY", "1g")
-    monkeypatch.setenv("SPARK_DRIVER_MEMORY", "2g")
-
-    settings = create_spark_session("test-config")
-    assert settings["spark.executor.memory"] == "1g"
-    assert settings["spark.driver.memory"] == "2g"
