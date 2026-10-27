@@ -1,0 +1,32 @@
+# Python environments and generated files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local configuration and logs
+.env
+.env.*
+!.env.example
+*.log
+derby.log
+spark-warehouse/
+metastore_db/
+
+# Local dataset, trained models, and generated predictions
+/data/*
+!/data/.gitkeep
+/models/*
+!/models/.gitkeep
+/predictions/
